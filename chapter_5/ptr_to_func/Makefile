@@ -1,5 +1,5 @@
-SOURCES=sort.c
-OBJECTS=sort.o
+SOURCES=sort.c alloc.c
+OBJECTS=sort.o alloc.o
 OPTIONS=-g -Wall -Werror -O0 -std=c99
 LINK_FLAGS=-lm
 TARGET=sort

@@ -3,10 +3,26 @@
 
 #define LINES 1000
 
-void sort(char *v[], int n, int (*comp)(), int (*exch)());
+
+void sort(char *v[], int n, int(*comp)(), void(*exch)())
+{
+  int gap, i, j;
+
+  for(gap = n/2; gap > 0; gap /= 2)
+    for(i = gap; i < n; i++)
+      for(j = i - gap; j >= 0; j -= gap) {
+        if ((*comp)(v[j], v[j+gap]) <= 0)
+          break;
+        (*exch)(&v[j], &v[j+gap]);
+      }
+}
+char *alloc(int n);
+int Getline(char s[], int lim);
 int numcmp(char *s1, char *s2);
 void swap(char *px[], char *py[]);
 double atof(char *s);
+void writelines(char *lineptr[], int nlines);
+int readlines(char *lineptr[], int maxlines);
 
 int main(int argc, char const *argv[])
 {
@@ -31,18 +47,7 @@ int main(int argc, char const *argv[])
   return 0;
 }
 
-void sort(char *v[], int n, int (*comp)(), int (*exch)())
-{
-  int gap, i, j;
 
-  for(gap = n/2; gap > 0; gap /= 2)
-    for(i = gap; i < n; i++)
-      for(j = i - gap; j >= 0; j -= gap) {
-        if ((*comp)(v[j], v[j+gap]) <= 0)
-          break;
-        (*exch)(&v[j], &v[j+gap]);
-      }
-}
 
 int numcmp(char *s1, char *s2)
 {
@@ -66,6 +71,7 @@ void swap(char *px[], char *py[])
   *py = temp;
 }
 
+// convert string to float
 double atof(char *s)
 {
   double val, power;
@@ -91,4 +97,41 @@ double atof(char *s)
   }
 
   return (sign * val / power);
+}
+
+void writelines(char *lineptr[], int nlines)
+{
+  while(--nlines >= 0)
+    printf("%s\n", *lineptr);
+}
+
+int readlines(char *lineptr[], int maxlines)
+{
+  int len, nlines;
+  char *p, line[LINES];
+
+  nlines = 0;
+  while((len = Getline(line, LINES)) > 0)
+    if (nlines >= maxlines)
+      return -1;
+    else if ((p = alloc(len)) == NULL)
+      return -1;
+    else {
+      line[len - 1] = '\0';
+      strcpy(p, line);
+      lineptr[nlines++] = p;
+    }
+    return nlines;
+}
+
+int Getline(char *s, int lim)
+{
+  int c, i;
+  i = 0;
+  while(--lim > 0 && (c = getchar()) != EOF && c != '\n')
+    s[i++] = c;
+  if(c == '\n')
+    s[i++] = c;
+  s[i] = '\0';
+  return i;
 }

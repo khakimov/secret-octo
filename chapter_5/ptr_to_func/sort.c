@@ -4,18 +4,8 @@
 #define LINES 1000
 
 
-void sort(char *v[], int n, int(*comp)(), void(*exch)())
-{
-  int gap, i, j;
 
-  for(gap = n/2; gap > 0; gap /= 2)
-    for(i = gap; i < n; i++)
-      for(j = i - gap; j >= 0; j -= gap) {
-        if ((*comp)(v[j], v[j+gap]) <= 0)
-          break;
-        (*exch)(&v[j], &v[j+gap]);
-      }
-}
+void sort(char *v[], int n, int(*comp)(), void(*exch)());
 char *alloc(int n);
 int Getline(char s[], int lim);
 int numcmp(char *s1, char *s2);
@@ -102,7 +92,7 @@ double atof(char *s)
 void writelines(char *lineptr[], int nlines)
 {
   while(--nlines >= 0)
-    printf("%s\n", *lineptr);
+    printf("%s\n", *lineptr++);
 }
 
 int readlines(char *lineptr[], int maxlines)
@@ -134,4 +124,17 @@ int Getline(char *s, int lim)
     s[i++] = c;
   s[i] = '\0';
   return i;
+}
+
+void sort(char *v[], int n, int(*comp)(), void(*exch)())
+{
+  int gap, i, j;
+
+  for(gap = n/2; gap > 0; gap /= 2)
+    for(i = gap; i < n; i++)
+      for(j = i - gap; j >= 0; j -= gap) {
+        if ((*comp)(v[j], v[j+gap]) <= 0)
+          break;
+        (*exch)(&v[j], &v[j+gap]);
+      }
 }

@@ -3,9 +3,7 @@
 
 #define LINES 1000
 
-
-
-void sort(char *v[], int n, int(*comp)(), void(*exch)());
+void sort(char *v[], int n, int r, int(*comp)(), void(*exch)());
 char *alloc(int n);
 int Getline(char s[], int lim);
 int numcmp(char *s1, char *s2);
@@ -18,19 +16,35 @@ int main(int argc, char const *argv[])
 {
   char *lineptr[LINES];
   int nlines;
-  int numeric = 0;
+  int numeric = 0, reverse = 0;
 
-  if (argc > 1 && argv[1][0] == '-' && argv[1][1] == 'n')
-    numeric = 1;
+  while(argc > 0) 
+  {
+    if (*argv[0] == '-' && argv[0][1] == 'n'){
+      numeric = 1;
+    }
+
+    if (*argv[0] == '-' && argv[0][1] == 'r'){
+      reverse = 1;
+    }
+
+    argc--;
+    argv++;
+  }
+
+
+  // if (argc > 1 && argv[1][0] == '-' && argv[1][1] == 'n')
+  //   numeric = 1;
+  // if (argc > 1 && argv[1][0] == '-' && argv[1][1] == 'r')
+  //   reverse = 1;
+
   if((nlines = readlines(lineptr, LINES)) >= 0) {
     if(numeric)
-      sort(lineptr, nlines, numcmp, swap);
+      sort(lineptr, nlines, reverse, numcmp, swap);
     else
-      sort(lineptr, nlines, strcmp, swap);
+      sort(lineptr, nlines, reverse, strcmp, swap);
     writelines(lineptr, nlines);
-  }
-  else
-  {
+  } else {
     printf("input too big to sort\n");
   }
 
@@ -44,6 +58,7 @@ int numcmp(char *s1, char *s2)
   double v1, v2;
   v1 = atof(s1);
   v2 = atof(s2);
+
   if(v1 < v2)
     return(-1);
   else if (v1 > v2)
@@ -126,15 +141,21 @@ int Getline(char *s, int lim)
   return i;
 }
 
-void sort(char *v[], int n, int(*comp)(), void(*exch)())
+void sort(char *v[], int n, int r, int(*comp)(), void(*exch)())
 {
   int gap, i, j;
 
   for(gap = n/2; gap > 0; gap /= 2)
     for(i = gap; i < n; i++)
       for(j = i - gap; j >= 0; j -= gap) {
-        if ((*comp)(v[j], v[j+gap]) <= 0)
-          break;
+        if (r == 1) {
+          if ((*comp)(v[j], v[j+gap]) > 0)
+            break;
+        }
+        else
+          if ((*comp)(v[j], v[j+gap]) <= 0)
+            break;
+        
         (*exch)(&v[j], &v[j+gap]);
       }
 }

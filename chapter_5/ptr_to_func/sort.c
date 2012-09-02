@@ -3,7 +3,7 @@
 
 #define LINES 1000
 
-void sort(char *v[], int n, int r, int(*comp)(), void(*exch)());
+void sort(char *v[], int n, int r, int d, int(*comp)(), void(*exch)());
 char *alloc(int n);
 int Getline(char s[], int lim);
 int numcmp(char *s1, char *s2);
@@ -16,7 +16,7 @@ int main(int argc, char const *argv[])
 {
   char *lineptr[LINES];
   int nlines;
-  int numeric = 0, reverse = 0;
+  int numeric = 0, reverse = 0, dictionary = 0;
 
   while(argc > 0) 
   {
@@ -28,21 +28,19 @@ int main(int argc, char const *argv[])
       reverse = 1;
     }
 
+    if (*argv[0] == '-' && argv[0][1] == 'd'){
+      dictionary = 1;
+    }
+
     argc--;
     argv++;
   }
 
-
-  // if (argc > 1 && argv[1][0] == '-' && argv[1][1] == 'n')
-  //   numeric = 1;
-  // if (argc > 1 && argv[1][0] == '-' && argv[1][1] == 'r')
-  //   reverse = 1;
-
   if((nlines = readlines(lineptr, LINES)) >= 0) {
     if(numeric)
-      sort(lineptr, nlines, reverse, numcmp, swap);
+      sort(lineptr, nlines, reverse, dictionary, numcmp, swap);
     else
-      sort(lineptr, nlines, reverse, strcmp, swap);
+      sort(lineptr, nlines, reverse, dictionary, strcmp, swap);
     writelines(lineptr, nlines);
   } else {
     printf("input too big to sort\n");
@@ -141,7 +139,7 @@ int Getline(char *s, int lim)
   return i;
 }
 
-void sort(char *v[], int n, int r, int(*comp)(), void(*exch)())
+void sort(char *v[], int n, int r, int d, int(*comp)(), void(*exch)())
 {
   int gap, i, j;
 
@@ -152,9 +150,17 @@ void sort(char *v[], int n, int r, int(*comp)(), void(*exch)())
           if ((*comp)(v[j], v[j+gap]) > 0)
             break;
         }
-        else
-          if ((*comp)(v[j], v[j+gap]) <= 0)
+        
+        if (d == 1) {
+          if (*v[j] >= '0' && *v[j] <= '9' && *v[j] >= 'a' && *v[j] <= 'Z' && *v[j] == ' '){
+            if ((*comp)(v[j], v[j+gap]) <= 0) { break; }
+          } else {
             break;
+          }
+        } 
+        
+        if ((*comp)(v[j], v[j+gap]) <= 0)
+          break;
         
         (*exch)(&v[j], &v[j+gap]);
       }

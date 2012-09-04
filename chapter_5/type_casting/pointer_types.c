@@ -6,8 +6,9 @@ int main(){
     int int_array[5] = {1,2,3,4,5};
 
     void *void_pointer;
-
     void_pointer = (void *) char_array;
+    long unsigned int test;
+    printf("Sizeof test is %lu", sizeof(test));
 
     for(i=0; i < 5; i++) {
         printf("[char pointer] points to %p, which contains the char %c\n", void_pointer, *((char *) void_pointer));

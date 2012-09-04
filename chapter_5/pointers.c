@@ -7,6 +7,8 @@ static char *allocp = allocbuf;
 
 char *alloc(int n);
 void free(char *p);
+char *strcmp(char *s, *t);
+
 int main()
 {
   char *p;
@@ -43,4 +45,9 @@ void free(char *p)
 {
   if (p >= allocbuf && p < allocbuf + ALLOCSIZE)
     allocp = p;
+}
+
+char *strcmp(char *s, *t)
+{
+  
 }

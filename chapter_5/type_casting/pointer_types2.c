@@ -3,6 +3,7 @@
 int main() {
         int i;
 
+        printf(__STDC_VERSION__);
         char char_array[5] = {'a', 'b', 'c', 'd', 'e'};
         int int_array[5] = {1, 2, 3, 4, 5};
         // on 64bit system memory address stores not in 4 bytes, but 8 bytes.

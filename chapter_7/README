@@ -1,0 +1,4 @@
+pipe.c shows how you can use pipe in terminal, like:
+./a.out < filename 
+or
+cat file1 file2 | ./a.out > output

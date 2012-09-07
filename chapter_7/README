@@ -2,3 +2,11 @@ pipe.c shows how you can use pipe in terminal, like:
 ./a.out < filename 
 or
 cat file1 file2 | ./a.out > output
+
+scanf.c - formated input. Never heard what you can skip some values with %*d
+./a.out
+12 3.333 999 rus
+Got 2 digits 12, float 3.333000 and name ru
+
+skipped 999 as you can see
+

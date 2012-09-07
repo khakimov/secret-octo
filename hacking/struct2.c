@@ -2,16 +2,19 @@
 Desicription:
 
 struct tm {
-   int tm_sec;
-   int tm_min; 
-   int tm_hour; 
-   int tm_mday; 
-   int tm_mon; 
-   int tm_year; 
-   int tm_wday; 
-   int tm_yday; 
-   int tm_isdst;
+   int   tm_sec;      seconds after the minute [0-60] 
+   int   tm_min;      minutes after the hour [0-59] 
+   int   tm_hour;  hours since midnight [0-23] 
+   int   tm_mday;  day of the month [1-31] 
+   int   tm_mon;      months since January [0-11] 
+   int   tm_year;  years since 1900 
+   int   tm_wday;  days since Sunday [0-6] 
+   int   tm_yday;  days since January 1 [0-365] 
+   int   tm_isdst;    Daylight Savings Time flag 
+   long  tm_gmtoff;   offset from CUT in seconds 
+   char  *tm_zone;    timezone abbreviation 
 };
+
 sizeof(tm) is 56
 
 18 00 00 00 2d 00 00 00 11 00 00 00 06 00 00 00 
@@ -24,6 +27,7 @@ int_ptr @ 0x140734847612172 : 45 <- 2d 00 00 00 l-endian 00 00 00 2d (2*16 + 13)
 int_ptr @ 0x140734847612176 : 17 <- 11 00 00 00 l-endian 00 00 00 11 (1*16 + 1)
 
 */
+
 #include <stdio.h>
 #include <time.h>
 

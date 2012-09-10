@@ -1,0 +1,6 @@
+gcc -o game_of_chance game_of_chance.c
+and then
+./game_of_chance
+
+enjoy!
+

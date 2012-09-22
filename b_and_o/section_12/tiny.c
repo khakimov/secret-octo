@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/mman.h>
 
 #define RIO_BUFSIZE 8192
 #define MAXLINE 1024
@@ -117,11 +120,85 @@ void read_requesthdrs(rio_t *rp)
     return;
 }
 
+int parse_uri(char *uri, char *filename, char *cgiargs)
+{
+    char *ptr;
+
+    if(!strstr(uri, "dyn")) {
+        strcpy(cgiargs, "");
+        strcpy(filename, ".");
+        strcat(filename, uri);
+        if(uri[strlen(uri) - 1] == '/')
+            strcat(filename, "home.html");
+        return 1;
+    }
+    else {
+        ptr = index(uri, '?');
+        if(ptr) {
+            strcpy(cgiargs, ptr+1);
+            *ptr = '\0';
+        }
+        else 
+            strcpy(cgiargs, "");
+        strcpy(filename, ".");
+        strcpy(filename, uri);
+        return 0;
+    }
+}
+void get_filetype(char *filename, char *filetype)
+{
+    if(strstr(filename, ".html"))
+        strcpy(filetype, "text/html");
+    else if(strstr(filename, ".gif"))
+        strcpy(filetype, "text/gif");
+    else if(strstr(filename, ".jpg"))
+        strcpy(filetype, "image/jpeg");
+    else
+        strcpy(filetype, "text/plain");
+}
+
+void serve_static(int fd, char *filename, int filesize)
+{
+    int srcfd;
+    char *srcp, filetype[MAXLINE], buf[MAXLINE];
+
+    get_filetype(filename, filetype);
+    sprintf(buf, "HTTP/2.0 200 OK\r\n");
+    sprintf(buf, "%sServer: Tiny Tiny Web Server\r\n", buf);
+    sprintf(buf, "%sContent-length: %d\r\n", buf, filesize);
+    sprintf(buf, "%sContent-type: %s\r\n\r\n", buf, filetype);
+    rio_writen(fd, buf, strlen(buf));
+
+    srcfd = open(filename, O_RDONLY, 0);
+    srcp = mmap(0, filesize, PROT_READ, MAP_PRIVATE, srcfd, 0);
+    close(srcfd);
+    rio_writen(fd, srcp, filesize);
+    munmap(srcp, filesize);
+}
+
+void serve_dynamic(int fd, char *filename, char *args)
+{
+    int add = 0;
+    add = atoi(args);
+    add += 100; 
+    char body[MAXLINE];
+    sprintf(body, "%d", add);
+    printf("add %d args %s and sizeof %lu\n", add, args, sizeof(args));
+    char buf[MAXLINE];
+    sprintf(buf, "HTTP/2.0 200 OK\r\n");
+    sprintf(buf, "%sServer: Tiny Tiny Web Server\r\n", buf);
+    sprintf(buf, "%sContent-type: text/html\r\n\r\n", buf);
+    rio_writen(fd, buf, strlen(buf));
+    rio_writen(fd, body, strlen(body));
+}
+
+
 void doit(int fd)
 {
     int is_static;
     struct stat sbuf;
     char buf[MAXLINE], method[MAXLINE], uri[MAXLINE], version[MAXLINE];
+    char filename[MAXLINE], cgiargs[MAXLINE];
     rio_t rio;
 
     rio_readinitb(&rio, fd);
@@ -133,6 +210,24 @@ void doit(int fd)
         return;
     }
     read_requesthdrs(&rio);
+
+    is_static = parse_uri(uri, filename, cgiargs);
+    
+    if((stat(filename, &sbuf) < 0) && is_static){
+        clienterror(fd, filename, "404", "Not found", "Tiny coulnd't find this file");
+        return;
+    }
+    
+    if(is_static) {
+        if(!(S_ISREG(sbuf.st_mode)) || !(S_IRUSR & sbuf.st_mode)) {
+            clienterror(fd, filename, "403", "Forbidden", "Tiny Tiny couldn't read the file");
+            return;
+        }
+        serve_static(fd, filename, sbuf.st_size);
+    }
+    else {
+        serve_dynamic(fd, filename, cgiargs);
+    }
 }
 
 /*

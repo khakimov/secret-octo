@@ -162,6 +162,8 @@ int main(int argc, char **argv)
                   if(i == nfiles)
                         fprintf(stderr, "nlefttoconn = %d but nothing found\n", nlefttoconn);
                   start_connect(&file[i]);
+                  //FD_SET(fd, &rset);
+                  //FD_SET(fd, &wset);
                   nconn++;
                   nlefttoconn--;
             }
@@ -183,6 +185,7 @@ int main(int argc, char **argv)
                         fprintf(stderr, "connection established\n");
                         FD_CLR(fd, &wset); // no more writeability test
                         write_get_cmd(&file[i]);
+                        //      FD_SET(fptr->f_fd, &rset); // will read server's reply
                   } else if (flags & F_READING && FD_ISSET(fd, &rs)) {
                         if((n = Read(fd, buf, sizeof(buf))) == 0) {
                               fprintf(stderr, "end-of-file\n");

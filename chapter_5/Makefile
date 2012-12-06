@@ -1,8 +1,8 @@
-SOURCES=strcat.c
-OBJECTS=strcat.o
+SOURCES=5-6.c
+OBJECTS=5-6.o
 OPTIONS=-g -Wall -Werror -O0 -std=c99
 LINK_FLAGS=-lm
-TARGET=strcat
+TARGET=56
 CC=gcc
 
 $(TARGET): $(OBJECTS)

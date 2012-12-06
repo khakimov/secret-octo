@@ -64,10 +64,10 @@ void treeprint(struct tnode *p)
 
 char *strsave(char *s)   /* notice type is BELOW header; this is common in C */
 {
- char *p;
- if ((p = (char *) malloc(strlen(s)+1)) != NULL)
+  char *p;
+  if ((p = (char *) malloc(strlen(s)+1)) != NULL)
      strcpy(p, s);
- return p;
+  return p;
 }
 
 int type(int c)
